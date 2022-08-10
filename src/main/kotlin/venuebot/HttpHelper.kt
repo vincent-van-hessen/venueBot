@@ -21,7 +21,8 @@ import javax.net.ssl.X509TrustManager
 
 object HttpHelper {
 
-    fun getPage(url: String, params: List<String> = emptyList(), cookies: String? = null, rawData: String? = null, timeout: Int = 30000): String {
+    fun getPage(url: String, params: List<String> = emptyList(), cookies: String? = null, rawData: String? = null, timeout: Int = 30000, referer:String? = null): String {
+        println("Getting -> $url")
         val returnString: String
         val buildString = StringBuilder()
         var connection: URLConnection
@@ -39,7 +40,7 @@ object HttpHelper {
             }
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0")
             connection.setRequestProperty("Accept-Charset", charset)
-            connection.setRequestProperty("Referer", "https://www.dresden.de/apps_ext/StrassenmusikApp_en/login?2")
+            connection.setRequestProperty("Referer", referer ?: "https://www.dresden.de/apps_ext/StrassenmusikApp_en/login?2")
             connection.setRequestProperty("Origin", "https://www.dresden.de")
             if (rawData != null) {
                 connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
