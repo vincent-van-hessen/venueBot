@@ -3,12 +3,10 @@ package venuebot
 import io.github.bonigarcia.wdm.WebDriverManager
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import org.openqa.selenium.support.ui.WebDriverWait
-import java.io.File
 import java.lang.Thread.sleep
 import java.time.DayOfWeek
 import java.time.Duration
@@ -34,23 +32,28 @@ object Main {
         //Initiating your chromedriver
         //Initiating your chromedriver
         val chromeOptions = ChromeOptions()
-        chromeOptions.addExtensions(File("buster.crx"))
+        //chromeOptions.addExtensions(File("buster.crx"))
 
-        val driver: WebDriver = ChromeDriver(chromeOptions)
+        val webDriverManager = WebDriverManager.chromedriver().browserInDocker().enableVnc()
+        val driver: WebDriver = webDriverManager.create()
+        while (true) {
+            driver.manage().deleteAllCookies()
 
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10))
-        //maximize window
-        //maximize window
-        driver.manage().window().maximize()
-        val webDriverWait = WebDriverWait(driver, Duration.ofSeconds(5))
+            println(webDriverManager.dockerNoVncUrl)
+            println(webDriverManager.dockerVncUrl)
 
-        loginIntoPage(driver, webDriverWait, username, password)
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10))
 
-        SlotService().getSlotsToBeBooked().map {
-            bookOneSlot(driver, webDriverWait, it)
+            driver.manage().window().maximize()
+            val webDriverWait = WebDriverWait(driver, Duration.ofSeconds(5))
+
+            loginIntoPage(driver, webDriverWait, username, password)
+
+            SlotService().getSlotsToBeBooked().map {
+                bookOneSlot(driver, webDriverWait, it)
+            }
+
         }
-
-        driver.close()
 
     }
 
@@ -127,7 +130,7 @@ object Main {
         }
     }
 
-    fun deductDateFromWeekday(weekday: DayOfWeek): LocalDate {
+    private fun deductDateFromWeekday(weekday: DayOfWeek): LocalDate {
         val today = LocalDate.now()
         return if (today.dayOfWeek == weekday) {
             today
