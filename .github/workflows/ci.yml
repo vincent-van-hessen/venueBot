@@ -69,6 +69,6 @@ jobs:
         with:
           tag_name: ${{ needs.buildFatJarForJVM.outputs.tag-version }}
           files: |
-            boat.jar
+            venueBot-1.0-SNAPSHOT-all.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
