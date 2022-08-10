@@ -28,7 +28,7 @@ object Main {
 
         if (username?.isBlank() == true || password?.isBlank() == true) println("username or password not provided")
 
-        println("Hello World!")
+        println("running on: [${HttpHelper.externalHostname()}]")
 
         WebDriverManager.chromedriver().setup()
 

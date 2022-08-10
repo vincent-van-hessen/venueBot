@@ -3,6 +3,7 @@ package venuebot
 
 import org.apache.commons.io.IOUtils
 import java.io.BufferedReader
+import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
@@ -14,6 +15,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.security.KeyManagementException
 import java.security.NoSuchAlgorithmException
 import java.security.cert.X509Certificate
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
@@ -21,7 +23,14 @@ import javax.net.ssl.X509TrustManager
 
 object HttpHelper {
 
-    fun getPage(url: String, params: List<String> = emptyList(), cookies: String? = null, rawData: String? = null, timeout: Int = 30000, referer:String? = null): String {
+    fun getPage(
+        url: String,
+        params: List<String> = emptyList(),
+        cookies: String? = null,
+        rawData: String? = null,
+        timeout: Int = 30000,
+        referer: String? = null
+    ): String {
         println("Getting -> $url")
         val returnString: String
         val buildString = StringBuilder()
@@ -243,6 +252,23 @@ object HttpHelper {
             }
         }
     )
+
+
+    fun externalHostname(): String {
+        val builder = ProcessBuilder()
+        builder.command("bash", "-c", "dig -x $(curl -s checkip.amazonaws.com) +short")
+        builder.directory(File(System.getProperty("user.home")))
+        var output = ""
+        val error = ""
+        try {
+            val process = builder.start()
+            process.waitFor(5, TimeUnit.SECONDS)
+            output = String(process.inputStream.readAllBytes())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return output
+    }
 
     @Throws(IOException::class)
     fun downloadFileToPath(fileURLFromTorrent: String, localPath: String) {
