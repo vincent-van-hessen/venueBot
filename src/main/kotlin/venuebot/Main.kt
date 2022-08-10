@@ -10,6 +10,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
 import java.lang.Thread.sleep
 import java.time.DayOfWeek
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -19,6 +20,8 @@ object Main {
 
     @JvmStatic
     fun main(args: Array<String>) {
+
+        val started = Instant.now()
 
         val username = PropertiesHelper.getProperty("EMAIL")
         val password = PropertiesHelper.getProperty("PASSWORD")
@@ -30,13 +33,12 @@ object Main {
         WebDriverManager.chromedriver().setup()
 
         //Initiating your chromedriver
-        //Initiating your chromedriver
         val chromeOptions = ChromeOptions()
         //chromeOptions.addExtensions(File("buster.crx"))
 
         val webDriverManager = WebDriverManager.chromedriver().browserInDocker().enableVnc()
         val driver: WebDriver = webDriverManager.create()
-        while (true) {
+        while (Duration.between(started, Instant.now()).toHours() < 1) {
             driver.manage().deleteAllCookies()
 
             println(webDriverManager.dockerNoVncUrl)
@@ -54,7 +56,8 @@ object Main {
             }
 
         }
-
+        driver.close()
+        webDriverManager.quit()
     }
 
     private fun bookOneSlot(driver: WebDriver, webDriverWait: WebDriverWait, slot: Slot) {
