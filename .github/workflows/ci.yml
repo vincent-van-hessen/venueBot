@@ -37,11 +37,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew build
-      - name: run for a while
-        env:
-          EMAIL: ${{ secrets.EMAIL }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          DURATION: "6"
-        run: |
-          cp ./build/libs/venueBot-1.0-SNAPSHOT-all.jar ./venueBot-1.0-SNAPSHOT-all.jar
-          java -jar venueBot-1.0-SNAPSHOT-all.jar
