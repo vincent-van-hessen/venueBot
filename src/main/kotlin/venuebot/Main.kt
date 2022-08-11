@@ -40,11 +40,11 @@ object Main {
 
         val webDriverManager = WebDriverManager.chromedriver().browserInDocker().enableVnc()
         val driver: WebDriver = webDriverManager.create()
+        println(webDriverManager.dockerNoVncUrl)
+        println(webDriverManager.dockerVncUrl)
         while (Duration.between(started, Instant.now()) < durationOfBookingTime) {
             driver.manage().deleteAllCookies()
 
-            println(webDriverManager.dockerNoVncUrl)
-            println(webDriverManager.dockerVncUrl)
 
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10))
 
