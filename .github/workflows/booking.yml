@@ -4,10 +4,8 @@
 name: CI/CD
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  schedule:
+    - cron: "45 7 * * *"
 
 jobs:
   buildFatJarForJVM:
@@ -41,7 +39,7 @@ jobs:
         env:
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
-          DURATION: "6"
+          DURATION: "60"
         run: |
           cp ./build/libs/venueBot-1.0-SNAPSHOT-all.jar ./venueBot-1.0-SNAPSHOT-all.jar
           java -jar venueBot-1.0-SNAPSHOT-all.jar

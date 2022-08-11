@@ -25,10 +25,12 @@ object Main {
 
         val username = PropertiesHelper.getProperty("EMAIL")
         val password = PropertiesHelper.getProperty("PASSWORD")
+        val durationString = PropertiesHelper.getProperty("DURATION")
+        val durationOfBookingTime = Duration.ofMinutes(durationString?.toLong() ?: 5)
 
         if (username?.isBlank() == true || password?.isBlank() == true) println("username or password not provided")
 
-        println("running on: [${HttpHelper.externalHostname()}]")
+        println("running on: [${HttpHelper.externalHostname()}] for $durationOfBookingTime")
 
         WebDriverManager.chromedriver().setup()
 
@@ -38,7 +40,7 @@ object Main {
 
         val webDriverManager = WebDriverManager.chromedriver().browserInDocker().enableVnc()
         val driver: WebDriver = webDriverManager.create()
-        while (Duration.between(started, Instant.now()).toHours() < 1) {
+        while (Duration.between(started, Instant.now()) < durationOfBookingTime) {
             driver.manage().deleteAllCookies()
 
             println(webDriverManager.dockerNoVncUrl)
