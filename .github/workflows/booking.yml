@@ -31,10 +31,10 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Build with Gradle
+      - name: Build jar with Gradle
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew build
+        run: ./gradlew shadowJar
       - name: run for a while
         env:
           EMAIL: ${{ secrets.EMAIL }}
