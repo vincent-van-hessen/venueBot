@@ -6,6 +6,7 @@ name: booking slots
 on:
   schedule:
     - cron: "45 7 * * *"
+  workflow_dispatch:
 
 jobs:
   buildFatJarForJVM:
