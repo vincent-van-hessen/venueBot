@@ -5,7 +5,7 @@ name: booking slots
 
 on:
   schedule:
-    - cron: "45 7 * * *"
+    - cron: "50 7 * * *"
   workflow_dispatch:
 
 jobs:
