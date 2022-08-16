@@ -35,7 +35,6 @@ jobs:
       - run: |
           cp ./build/libs/venueBot-1.0-SNAPSHOT-all.jar ./venueBot-1.0-SNAPSHOT-all.jar
       - uses: actions/upload-artifact@v3
-        if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
         with:
           name: jvmArtifacts-${{ github.sha }}
           path: |
