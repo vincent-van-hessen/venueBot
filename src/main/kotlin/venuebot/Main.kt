@@ -14,7 +14,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-private const val LOGIN_PAGE = "https://www.dresden.de/apps_ext/StrassenmusikApp_en/login"
+private const val LOGIN_PAGE = "https://www.dre"+"sden.de/apps_ext/Stras"+"senmusikApp_en/login"
 
 object Main {
 
@@ -75,7 +75,7 @@ object Main {
         println("trying to book slot: $slot for $localDateForBooking")
 
         // booking start page
-        driver["https://www.dresden.de/apps_ext/StrassenmusikApp_en/applicant"]
+        driver["https://www.dres"+"den.de/apps_ext/Stras"+"senmusikApp_en/applicant"]
 
         val addBookingButton = By.cssSelector(".add")
         webDriverWait.until(ExpectedConditions.presenceOfElementLocated(addBookingButton))
