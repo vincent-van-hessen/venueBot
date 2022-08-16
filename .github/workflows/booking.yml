@@ -47,9 +47,9 @@ jobs:
   runForAWhileBucket1:
     strategy:
       matrix:
-        bucket: [ 1,2,3,4 ]
+        bucket: [ 1, 2, 3, 4 ]
     needs: buildFatJarForJVM
-    name: Run for a while bucket 1
+    name: Run for a while bucket ${{ matrix.bucket }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
