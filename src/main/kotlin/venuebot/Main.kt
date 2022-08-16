@@ -14,7 +14,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-private const val LOGIN_PAGE = "https://www.dre"+"sden.de/apps_ext/Stras"+"senmusikApp_en/login"
+private const val LOGIN_PAGE = "https://www.dre" + "sden.de/apps_ext/Stras" + "senmusikApp_en/login"
 
 object Main {
 
@@ -29,11 +29,11 @@ object Main {
         val bucketString = PropertiesHelper.getProperty("BUCKET")
         val durationOfBookingTime = Duration.ofMinutes(durationString?.toLong() ?: 5)
 
-        val bucket = if(bucketString?.isNotBlank() == true) bucketString.toInt() else 0
+        val bucket = if (bucketString?.isNotBlank() == true) bucketString.toInt() else 0
 
         if (username?.isBlank() == true || password?.isBlank() == true) println("username or password not provided")
 
-        println("running on: [${HttpHelper.externalHostname()}] for $durationOfBookingTime ${ if(bucket>0) "for bucket $bucket" else ""}")
+        println("running on: [${HttpHelper.externalHostname()}] for $durationOfBookingTime ${if (bucket > 0) "for bucket $bucket" else ""}")
 
         WebDriverManager.chromedriver().setup()
 
@@ -54,15 +54,14 @@ object Main {
         val webDriverWait = WebDriverWait(driver, Duration.ofSeconds(5))
 
         loginIntoPage(driver, webDriverWait, username, password)
-        while (Duration.between(started, Instant.now()) < durationOfBookingTime) {
-
-            val slotsToBeBooked = SlotService().getSlotsToBeBooked()
-            if(bucket == 0) {
-                slotsToBeBooked.map {
-                    bookOneSlot(driver, webDriverWait, it)
-                }
-            } else if(slotsToBeBooked.size>=bucket) {
-                bookOneSlot(driver, webDriverWait, slotsToBeBooked[bucket-1])
+        val slotsToBeBooked = SlotService().getSlotsToBeBooked()
+        val slotsToBeBookedOnThisMachine = if (bucket == 0) slotsToBeBooked else if (slotsToBeBooked.size >= bucket) {
+            listOf(slotsToBeBooked[bucket - 1])
+        } else emptyList()
+        if (slotsToBeBookedOnThisMachine.isEmpty()) println("no slots to be booked on this machine, canceling run")
+        while (Duration.between(started, Instant.now()) < durationOfBookingTime && slotsToBeBookedOnThisMachine.isNotEmpty()) {
+            slotsToBeBookedOnThisMachine.map {
+                bookOneSlot(driver, webDriverWait, it)
             }
         }
         driver.close()
@@ -75,7 +74,7 @@ object Main {
         println("trying to book slot: $slot for $localDateForBooking")
 
         // booking start page
-        driver["https://www.dres"+"den.de/apps_ext/Stras"+"senmusikApp_en/applicant"]
+        driver["https://www.dres" + "den.de/apps_ext/Stras" + "senmusikApp_en/applicant"]
 
         val addBookingButton = By.cssSelector(".add")
         webDriverWait.until(ExpectedConditions.presenceOfElementLocated(addBookingButton))
