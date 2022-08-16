@@ -26,11 +26,14 @@ object Main {
         val username = PropertiesHelper.getProperty("EMAIL")
         val password = PropertiesHelper.getProperty("PASSWORD")
         val durationString = PropertiesHelper.getProperty("DURATION")
+        val bucketString = PropertiesHelper.getProperty("BUCKET")
         val durationOfBookingTime = Duration.ofMinutes(durationString?.toLong() ?: 5)
+
+        val bucket = if(bucketString?.isNotBlank() == true) bucketString.toInt() else 0
 
         if (username?.isBlank() == true || password?.isBlank() == true) println("username or password not provided")
 
-        println("running on: [${HttpHelper.externalHostname()}] for $durationOfBookingTime")
+        println("running on: [${HttpHelper.externalHostname()}] for $durationOfBookingTime ${ if(bucket>0) "for bucket $bucket" else ""}")
 
         WebDriverManager.chromedriver().setup()
 
@@ -42,21 +45,25 @@ object Main {
         val driver: WebDriver = webDriverManager.create()
         println(webDriverManager.dockerNoVncUrl)
         println(webDriverManager.dockerVncUrl)
+        driver.manage().deleteAllCookies()
+
+
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10))
+
+        driver.manage().window().maximize()
+        val webDriverWait = WebDriverWait(driver, Duration.ofSeconds(5))
+
+        loginIntoPage(driver, webDriverWait, username, password)
         while (Duration.between(started, Instant.now()) < durationOfBookingTime) {
-            driver.manage().deleteAllCookies()
 
-
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10))
-
-            driver.manage().window().maximize()
-            val webDriverWait = WebDriverWait(driver, Duration.ofSeconds(5))
-
-            loginIntoPage(driver, webDriverWait, username, password)
-
-            SlotService().getSlotsToBeBooked().map {
-                bookOneSlot(driver, webDriverWait, it)
+            val slotsToBeBooked = SlotService().getSlotsToBeBooked()
+            if(bucket == 0) {
+                slotsToBeBooked.map {
+                    bookOneSlot(driver, webDriverWait, it)
+                }
+            } else if(slotsToBeBooked.size>=bucket) {
+                bookOneSlot(driver, webDriverWait, slotsToBeBooked[bucket-1])
             }
-
         }
         driver.close()
         webDriverManager.quit()
@@ -149,7 +156,7 @@ object Main {
 
     private fun loginIntoPage(
         driver: WebDriver, webDriverWait: WebDriverWait, username: String?, password: String?
-    ) {
+    ): Boolean {
         //open browser with desired URL
         driver[LOGIN_PAGE]
 
@@ -170,6 +177,7 @@ object Main {
         webDriverWait.until(ExpectedConditions.presenceOfElementLocated(cookieAllowButton))
 
         driver.findElement(cookieAllowButton).click()
+        return true
     }
 
     private fun solveRecaptcha(driver: WebDriver, webDriverWait: WebDriverWait) {

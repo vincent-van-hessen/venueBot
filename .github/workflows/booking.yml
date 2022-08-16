@@ -12,8 +12,6 @@ jobs:
   buildFatJarForJVM:
     name: Build JVM jar application
     runs-on: ubuntu-latest
-    outputs:
-      tag-version: ${{ steps.tag_version.outputs.new_tag }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -34,11 +32,34 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew shadowJar
+      - run: |
+          cp ./build/libs/venueBot-1.0-SNAPSHOT-all.jar ./venueBot-1.0-SNAPSHOT-all.jar
+      - uses: actions/upload-artifact@v3
+        if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+        with:
+          name: jvmArtifacts-${{ github.sha }}
+          path: |
+            ./venueBot-1.0-SNAPSHOT-all.jar
+            ./user.cfg
+            ./times.json
+          retention-days: 1
+
+  runForAWhileBucket1:
+    strategy:
+      matrix:
+        bucket: [ 1,2,3,4 ]
+    needs: buildFatJarForJVM
+    name: Run for a while bucket 1
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: jvmArtifacts-${{ github.sha }}
       - name: run for a while
         env:
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
-          DURATION: "60"
+          DURATION: "30"
+          BUCKET: ${{ matrix.bucket }}
         run: |
-          cp ./build/libs/venueBot-1.0-SNAPSHOT-all.jar ./venueBot-1.0-SNAPSHOT-all.jar
           java -jar venueBot-1.0-SNAPSHOT-all.jar
