@@ -13,6 +13,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.concurrent.thread
 
 private const val LOGIN_PAGE = "https://www.dre" + "sden.de/apps_ext/Stras" + "senmusikApp_en/login"
 
@@ -36,13 +37,34 @@ object Main {
 
         println("running on: [${HttpHelper.externalHostname()}] for $durationOfBookingTime ${if (bucket > 0) "for bucket $bucket" else ""}")
 
+        val runHeadless = localString?.isBlank() != false
+
+        val numberOfThreads = if (runHeadless) 3 else 1
+
+        for (i in 1..numberOfThreads) {
+            thread(start = true) {
+                println("${Thread.currentThread()} has started.")
+                startWebDriver(runHeadless, username, password, bucket, started, durationOfBookingTime)
+            }
+        }
+
+    }
+
+    private fun startWebDriver(
+        runHeadless: Boolean,
+        username: String?,
+        password: String?,
+        bucket: Int,
+        started: Instant?,
+        durationOfBookingTime: Duration?
+    ) {
         WebDriverManager.chromedriver().setup()
 
         //Initiating your chromedriver
         val chromeOptions = ChromeOptions()
         //chromeOptions.addExtensions(File("buster.crx"))
 
-        val webDriverManager: WebDriverManager = if (localString?.isBlank() != false) {
+        val webDriverManager: WebDriverManager = if (runHeadless) {
             WebDriverManager.chromedriver().browserInDocker().enableVnc()
         } else {
             WebDriverManager.chromedriver()
@@ -79,7 +101,7 @@ object Main {
     private fun bookOneSlot(driver: WebDriver, webDriverWait: WebDriverWait, slot: Slot) {
         val localDateForBooking = deductDateFromWeekday(slot.weekday)
 
-        println("trying to book slot: $slot for $localDateForBooking")
+        println("${Thread.currentThread()} trying to book slot: $slot for $localDateForBooking")
 
         // booking start page
 
@@ -95,12 +117,11 @@ object Main {
         val periodSelector = By.cssSelector("select")
         val periodSelectorElement = driver.findElement(periodSelector)
         val periodDropdown = Select(periodSelectorElement)
-        periodDropdown.options.
-            filter { it.text.contains("${localDateForBooking.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))} ${slot.localTime}") }
+        periodDropdown.options.filter { it.text.contains("${localDateForBooking.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))} ${slot.localTime}") }
             .map { it.click() }
             .let {
                 if (it.isEmpty()) {
-                    println("time slot not available anymore")
+                    println("${Thread.currentThread()} time slot not available anymore")
                     return
                 }
             }
@@ -123,12 +144,12 @@ object Main {
                 slotRadioButton.click()
                 foundSlot = true
             } else {
-                println("Slot not available - [${statusText.text}]")
+                println("${Thread.currentThread()} Slot not available - [${statusText.text}]")
             }
         }
 
         if (selectedSlot.isEmpty() && !foundSlot) {
-            println("Slot not found")
+            println("${Thread.currentThread()} Slot not found")
         } else if (foundSlot) {
             // nextAfter Slot
             val nextButtonSlots = By.className("next")
@@ -138,7 +159,7 @@ object Main {
             val confirmBooking = By.className("next")
             driver.findElement(confirmBooking).click()
 
-            println("should be booked")
+            println("${Thread.currentThread()} should be booked")
         }
     }
 
