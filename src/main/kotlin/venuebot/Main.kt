@@ -144,12 +144,12 @@ object Main {
                 slotRadioButton.click()
                 foundSlot = true
             } else {
-                println("${Thread.currentThread()} Slot not available - [${statusText.text}]")
+                println("${Thread.currentThread()} $slot not available - [${statusText.text}]")
             }
         }
 
         if (selectedSlot.isEmpty() && !foundSlot) {
-            println("${Thread.currentThread()} Slot not found")
+            println("${Thread.currentThread()} $slot not found")
         } else if (foundSlot) {
             // nextAfter Slot
             val nextButtonSlots = By.className("next")
@@ -159,7 +159,7 @@ object Main {
             val confirmBooking = By.className("next")
             driver.findElement(confirmBooking).click()
 
-            println("${Thread.currentThread()} should be booked")
+            println("${Thread.currentThread()} $slot should be booked")
         }
     }
 
