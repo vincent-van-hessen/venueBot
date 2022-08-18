@@ -61,7 +61,7 @@ object Main {
         WebDriverManager.chromedriver().setup()
 
         //Initiating your chromedriver
-        val chromeOptions = ChromeOptions()
+        //val chromeOptions = ChromeOptions()
         //chromeOptions.addExtensions(File("buster.crx"))
 
         val webDriverManager: WebDriverManager = if (runHeadless) {
@@ -105,7 +105,7 @@ object Main {
 
         // booking start page
 
-        // amplifieer data
+        // append data
         val nextButton = By.className("next")
         driver.navigate().to("https://www.dres" + "den.de/apps_ext/Stras" + "senmusikApp_en/create-booking-userdata")
         driver.findElement(nextButton).click()
@@ -121,7 +121,7 @@ object Main {
             .map { it.click() }
             .let {
                 if (it.isEmpty()) {
-                    println("${Thread.currentThread()} time slot not available anymore")
+                    println("${Thread.currentThread()} $slot time not available anymore")
                     return
                 }
             }
@@ -181,10 +181,6 @@ object Main {
         //open browser with desired URL
         driver[LOGIN_PAGE]
 
-        //driver.navigate().to("https://www.dresden.de/apps_ext/StrassenmusikApp_en/login")
-        val slotsToBeBooked = SlotService().getSlotsToBeBooked()
-
-
         val loginButton = By.name("submit")
         val usernameField = By.name("username")
         val passwordField = By.name("password")
@@ -195,9 +191,8 @@ object Main {
 
         val cookieAllowButton = By.cssSelector("a.cc-btn.cc-allow")
 
-        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(cookieAllowButton))
-
         driver.findElement(cookieAllowButton).click()
+
         return true
     }
 
