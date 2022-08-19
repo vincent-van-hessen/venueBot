@@ -43,7 +43,7 @@ class SlotService {
                 DayOfWeek.TUESDAY -> slot.weekday == DayOfWeek.WEDNESDAY
                 DayOfWeek.WEDNESDAY -> slot.weekday == DayOfWeek.THURSDAY
                 DayOfWeek.THURSDAY -> slot.weekday == DayOfWeek.FRIDAY
-                DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY -> (slot.weekday == DayOfWeek.SATURDAY || slot.weekday == DayOfWeek.SUNDAY)
+                DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY -> (slot.weekday == DayOfWeek.SATURDAY || slot.weekday == DayOfWeek.SUNDAY || slot.weekday == DayOfWeek.MONDAY)
                 else -> false
             }
         }
