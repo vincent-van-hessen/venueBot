@@ -25,11 +25,15 @@ class SlotService {
                 else -> null
             }
             jsonObject.keySet().filter { it != "day" }.map { lot: String ->
-                val timeOfDayString = jsonObject.get(lot).asString
-                val localTime = LocalTime.parse(timeOfDayString)
-                if (dayOfWeek != null) {
-                    listOfSlots.add(Slot(lot, dayOfWeek, localTime))
-                } else null
+                try {
+                    val timeOfDayString = jsonObject.get(lot).asString
+                    val localTime = LocalTime.parse(timeOfDayString)
+                    if (dayOfWeek != null) {
+                        listOfSlots.add(Slot(lot, dayOfWeek, localTime))
+                    } else null
+                } catch (exception:Exception) {
+                    println("bad value in config: $lot")
+                }
             }
         }
         return listOfSlots
