@@ -18,15 +18,16 @@ repositories {
 
 dependencies {
     implementation("commons-io:commons-io:2.11.0")
-    implementation("org.seleniumhq.selenium:selenium-java:4.3.0")
-    implementation("io.github.bonigarcia:webdrivermanager:5.2.3")
-    implementation("org.jsoup:jsoup:1.15.2")
+    implementation("org.seleniumhq.selenium:selenium-java:4.4.0")
+    implementation("io.github.bonigarcia:webdrivermanager:5.3.0")
+    implementation("org.jsoup:jsoup:1.15.3")
     testImplementation(kotlin("test"))
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
-    testImplementation("io.mockk:mockk:1.12.5")
+    testImplementation("io.mockk:mockk:1.12.7")
+    testImplementation("org.assertj:assertj-core:3.23.1")
 }
 
 tasks.test {
